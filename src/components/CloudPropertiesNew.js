@@ -3,7 +3,11 @@ import { Container, Card } from 'semantic-ui-react';
 import { Field, reduxForm } from 'redux-form';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { createCloudProperty, fetchCloudPropertyKeys } from '../actions/CloudPropertiesActions';
+import { addComplete } from '../actions/NavbarActions';
+import {
+  createCloudProperty,
+  fetchCloudPropertyKeys
+} from '../actions/CloudPropertiesActions';
 import { Form, Button } from 'semantic-ui-react';
 
 class CloudPropertiesNew extends Component {
@@ -42,10 +46,10 @@ class CloudPropertiesNew extends Component {
   }
 
   onSubmit( values ) {
-    this.props.createCloudProperty( values )
-      .then( () => {
-        this.props.history.push( '/cloudproperties' );
-      } );
+    console.log("Values", values);
+    this.props.createCloudProperty( values );
+    this.props.addComplete();
+    this.props.history.push( '/cloudproperties' );
   }
 
   render() {
@@ -56,7 +60,7 @@ class CloudPropertiesNew extends Component {
         <Container>
           <Card fluid={true}>
             <Form className='field'
-                  onSubmit={handleSubmit( this.onSubmit.bind( this ) )}>
+                  onSubmit={handleSubmit( ( values ) => this.onSubmit( values ) )}>
               <h3>Create New Cloud Property</h3>
               <Field name='propertyName'
                      label='Property Name'
@@ -90,12 +94,24 @@ function mapStateToProps( state ) {
   return { cloudPropertyKeys : state.cloudPropertyReducer };
 }
 
+function mapDispatchToProps( dispatch ) {
+  return {
+    addComplete            : function () {
+      dispatch( addComplete() )
+    },
+    createCloudProperty    : function ( values ) {
+      dispatch( createCloudProperty( values ) )
+    },
+    fetchCloudPropertyKeys : function () {
+      dispatch( fetchCloudPropertyKeys() )
+    }
+  }
+}
 export default reduxForm( {
   validate,
   form : 'NewCloudPropertyForm'
 } )(
-  connect( mapStateToProps, {
-    createCloudProperty,
-    fetchCloudPropertyKeys
-  } )( CloudPropertiesNew )
-);
+  connect( mapStateToProps, mapDispatchToProps )
+  ( CloudPropertiesNew )
+)
+;

@@ -11,13 +11,18 @@ class Navbar extends Component {
     addNew     : false
   };
 
+  componentWillReceiveProps( nextProps ) {
+    console.log( nextProps );
+    this.setState( { addNew : nextProps.add } )
+  }
+
   handleItemClick = ( e, { name } ) => this.setState( {
     activeItem : name,
     addNew     : false
   } );
 
   createNew() {
-    this.props.addNewObject();
+    this.props.toggleAddNew();
     const location = this.props.location.pathname;
     if ( location.split( '/' )[ 2 ] !== 'new' ) {
       this.props.history.push( `${location}/new` );
@@ -60,7 +65,7 @@ class Navbar extends Component {
                         content='Add'
                         icon='plus'
                         color='teal'
-                        onClick={ this.createNew.bind( this )}/>
+                        onClick={ () => this.createNew()}/>
               </Menu.Item>
             </Menu.Menu>
           </Menu>
@@ -70,7 +75,16 @@ class Navbar extends Component {
   }
 }
 
+function mapDispatchToProps( dispatch ) {
+  return {
+    toggleAddNew : function () {
+      dispatch( addNewObject() )
+    }
+  }
+}
+
 function mapStateToProps( state ) {
   return { navbar : state.navbar };
 }
-export default connect( mapStateToProps, { addNewObject } )( Navbar );
+
+export default connect( mapStateToProps, mapDispatchToProps )( Navbar );

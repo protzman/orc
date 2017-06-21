@@ -12,7 +12,7 @@ class CloudProperties extends Component {
   };
 
   renderProperties() {
-    return _.map( this.props.cloudProperties, property => {
+    return _.map( this.props.cloudProperties.cloudPropertiesData, property => {
       return (
         <Table.Row key={property.propertyName}>
           <Table.Cell>{property.propertyName}</Table.Cell>
