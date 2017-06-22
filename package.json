@@ -12,7 +12,7 @@
     "redux": "^3.6.0",
     "redux-form": "^6.7.0",
     "redux-promise": "^0.5.3",
-    "redux-thunk": "^2.2.0",
+    "redux-thunk": "^1.0.0",
     "semantic-ui-css": "^2.2.10",
     "semantic-ui-react": "^0.68.5"
   },

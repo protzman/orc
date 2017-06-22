@@ -10,9 +10,9 @@ import reducers from './reducers';
 import { BrowserRouter as Router } from 'react-router-dom';
 import createHistory from 'history/createBrowserHistory';
 import { createStore, applyMiddleware, compose } from 'redux';
-
+import thunk from 'redux-thunk'
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const middleware       = applyMiddleware( promise );
+const middleware       = applyMiddleware( thunk);
 const enhancer         = composeEnhancers( middleware );
 const store            = createStore( reducers, {}, enhancer );
 

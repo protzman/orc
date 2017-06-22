@@ -21,45 +21,53 @@ export function postCP(values) {
       .catch( () => {
         //dispatch error
       } );
-    //fail safe shit
-    //return ({type: POST_CP, payload: []})
   }
 }
 
 export function createCloudProperty( values ) {
-  /*  const VARIABLE_URL = '/cloud/property';
-   return axios.post( `${ROOT_URL}${VARIABLE_URL}`, values )
-   .then( ( response ) => {
-   console.log( 'Create Cloud Props Response', response );
+  return (dispatch, getState) => {
+    const VARIABLE_URL = '/cloud/property';
+    return axios.post( `${ROOT_URL}${VARIABLE_URL}`, values )
+      .then( ( response ) => {
+        console.log( 'Create Cloud Props Response', response );
+        let newData = getState().cloudPropertiesReducer.cloudPropertiesData;
+        newData.push(response.data);
+        dispatch ( { type : POST_CP, payload : newData} );
+      } )
+      .catch( () => {
+        //dispatch error
+      } );
 
-   return ( { type : POST_CP, payload : response.data } );
-   } )
-   .catch( () => {
-   //dispatch error
-   } );*/
-  const action = postCP(values)
-  console.log("RETURNED ACTION: ", action)
+  }
 
 }
 
 export function fetchCloudProperties() {
-  const VARIABLE_URL = '/cloud/properties';
-  return axios.get( `${ROOT_URL}${VARIABLE_URL}` )
-    .then( ( response ) => {
-      return ({ type : FETCH_CPS, payload : response.data });
-    } )
-    .catch( ( errors ) => {
-      //dispatch or handle error message
-    } );
+  return (dispatch, getState) => {
 
+    const VARIABLE_URL = '/cloud/properties';
+    return axios.get( `${ROOT_URL}${VARIABLE_URL}` )
+      .then( ( response ) => {
+        dispatch ({ type : FETCH_CPS, payload : response.data });
+      } )
+      .catch( ( errors ) => {
+        //dispatch or handle error message
+      } );
+  }
 }
 
 export function fetchCloudPropertyKeys() {
-  const VARIABLE_URL = '/cloud/properties/keys';
-  const request      = axios.get( `${ROOT_URL}${VARIABLE_URL}` );
+  return (dispatch, getState) => {
+    const VARIABLE_URL = '/cloud/properties/keys';
+    return axios.get( `${ROOT_URL}${VARIABLE_URL}` )
+      .then ((response) => {
+        dispatch ({
+          type    : FETCH_CP_KEYS,
+          payload : response
+        });
+      })
 
-  return ({
-    type    : FETCH_CP_KEYS,
-    payload : request
-  });
+
+  }
+
 }
