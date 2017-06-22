@@ -1,16 +1,46 @@
-import React, { Component } from 'react';
-import { Container, Card } from 'semantic-ui-react';
-import { Field, reduxForm } from 'redux-form';
+import axios from 'axios';
 import _ from 'lodash';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { addComplete } from '../actions/NavbarActions';
+import { Field, reduxForm } from 'redux-form';
+import { Button, Card, Container, Form } from 'semantic-ui-react';
 import {
   createCloudProperty,
   fetchCloudPropertyKeys
 } from '../actions/CloudPropertiesActions';
-import { Form, Button } from 'semantic-ui-react';
+import { addComplete } from '../actions/NavbarActions';
 
 class CloudPropertiesNew extends Component {
+  constructor( props ) {
+    super( props )
+
+    this.state = {
+      cloudPropKeys : null,
+      loading       : true
+    }
+
+  }
+
+  componentWillMount() {
+    this.fetchCloudKeys();
+  }
+
+  fetchCloudKeys() {
+    const ROOT_URL     = 'http://localhost:8080/orchestration/service/rest';
+    const VARIABLE_URL = '/cloud/properties/keys';
+    this.setState( { loading : true }, () => {
+      axios.get( `${ROOT_URL}${VARIABLE_URL}` )
+        .then( ( response ) => {
+          let modifiedKeys = _.map( response.data, function ( key, value ) {
+            return { 'key' : value, 'text' : key, 'value' : key };
+          } );
+          this.setState( { loding : false, cloudPropKeys : modifiedKeys } )
+        } )
+        .catch( ( errors ) => {
+          //dispatch or handle error message
+        } );
+    } );
+  }
 
   renderInputField( field ) {
     const { meta : { touched, error } } = field;
@@ -41,12 +71,8 @@ class CloudPropertiesNew extends Component {
     )
   }
 
-  componentDidMount() {
-    this.props.fetchCloudPropertyKeys();
-  }
-
   onSubmit( values ) {
-    console.log("Values", values);
+    console.log( 'Values', values );
     this.props.createCloudProperty( values );
     this.props.addComplete();
     this.props.history.push( '/cloudproperties' );
@@ -64,7 +90,7 @@ class CloudPropertiesNew extends Component {
               <h3>Create New Cloud Property</h3>
               <Field name='propertyName'
                      label='Property Name'
-                     options={_.toArray( this.props.cloudPropertyKeys )}
+                     options={_.toArray( this.state.cloudPropKeys )}
                      component={this.renderSelectField}/>
               <Field name='propertyValue'
                      label='Property Value'
@@ -96,13 +122,13 @@ function mapStateToProps( state ) {
 
 function mapDispatchToProps( dispatch ) {
   return {
-    addComplete            : function () {
+    addComplete         : function () {
       dispatch( addComplete() )
     },
-    createCloudProperty    : function ( values ) {
+    createCloudProperty : function ( values ) {
       dispatch( createCloudProperty( values ) )
     },
-    fetchCloudPropertyKeys : function () {
+    fetchCloudPropKeys  : function () {
       dispatch( fetchCloudPropertyKeys() )
     }
   }

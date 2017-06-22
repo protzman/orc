@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import { Container, Table, Dimmer, Loader } from 'semantic-ui-react';
-import { connect } from 'react-redux';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Container, Dimmer, Loader, Table } from 'semantic-ui-react';
 import { fetchCloudProperties } from '../actions/CloudPropertiesActions';
 
 class CloudProperties extends Component {
@@ -63,7 +62,7 @@ class CloudProperties extends Component {
   }
 }
 
-function mapStateTotProps( state ) {
+function mapStateToProps( state ) {
   return { cloudProperties : state.cloudPropertyReducer };
 }
-export default connect( mapStateTotProps, { fetchCloudProperties } )( CloudProperties );
+export default connect( mapStateToProps, { fetchCloudProperties } )( CloudProperties );

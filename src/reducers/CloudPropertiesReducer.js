@@ -1,22 +1,22 @@
+import _ from 'lodash';
 import {
   FETCH_CP_KEYS,
   FETCH_CPS,
   POST_CP
 } from '../actions/CloudPropertiesActions';
-import _ from 'lodash';
 
 export default function ( state = {}, action ) {
   switch ( action.type ) {
     case FETCH_CPS:
       return { ...state, cloudPropertiesData : action.payload };
     case FETCH_CP_KEYS:
-      return _.map( action.payload.data, function ( key, value ) {
+      let modifiedKeys = _.map( action.payload.data, function ( key, value ) {
         return { 'key' : value, 'text' : key, 'value' : key };
       } );
+      return { ...state, modifiedKeys : modifiedKeys };
     case POST_CP:
       console.log( action.payload.data );
-
-      return { ...state, cloudPropertiesData : action.payload }
+      return { ...state, cloudPropertiesData : action.payload };
     default:
       return state;
   }
