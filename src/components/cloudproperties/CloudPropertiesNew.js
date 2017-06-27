@@ -3,12 +3,19 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { Button, Card, Container, Form } from 'semantic-ui-react';
+import {
+  Button,
+  Container,
+  Form,
+  Icon,
+  Message,
+  Segment
+} from 'semantic-ui-react';
 import {
   createCloudProperty,
   fetchCloudPropertyKeys
-} from '../actions/CloudPropertiesActions';
-import { addComplete } from '../actions/NavbarActions';
+} from '../../actions/CloudPropertiesActions';
+import { addComplete } from '../../actions/NavbarActions';
 
 class CloudPropertiesNew extends Component {
   constructor( props ) {
@@ -44,13 +51,19 @@ class CloudPropertiesNew extends Component {
 
   renderInputField( field ) {
     const { meta : { touched, error } } = field;
-    const className                     = `form-group ${touched && error ? 'error' : ''}`;
+    const className                     = `${touched && error ? 'error' : ''}`;
     return (
       <div className={className}>
         <Form.Field className='field'>
-          <label>{field.label}</label>
+          <label >{field.label}</label>
           <input {...field.input}
                  placeholder={field.label}/>
+          { touched && error &&
+          <Message className="text-help"
+                   size="tiny"
+                   negative>
+            <h4><Icon name='warning'/>{ error }</h4>
+          </Message> }
         </Form.Field>
       </div>
     );
@@ -82,9 +95,9 @@ class CloudPropertiesNew extends Component {
     const { handleSubmit } = this.props;
 
     return (
-      <div style={{ 'paddingTop' : '1em' }}>
+      <div className="component">
         <Container>
-          <Card fluid={true}>
+          <Segment>
             <Form className='field'
                   onSubmit={handleSubmit( ( values ) => this.onSubmit( values ) )}>
               <h3>Create New Cloud Property</h3>
@@ -97,7 +110,7 @@ class CloudPropertiesNew extends Component {
                      component={this.renderInputField}/>
               <Button type='submit'>Submit</Button>
             </Form>
-          </Card>
+          </Segment>
         </Container>
       </div>
     )
@@ -136,8 +149,4 @@ function mapDispatchToProps( dispatch ) {
 export default reduxForm( {
   validate,
   form : 'NewCloudPropertyForm'
-} )(
-  connect( mapStateToProps, mapDispatchToProps )
-  ( CloudPropertiesNew )
-)
-;
+} )( connect( mapStateToProps, mapDispatchToProps )( CloudPropertiesNew ) );

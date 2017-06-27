@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Container, Menu, Button } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { Button, Container, Menu } from 'semantic-ui-react';
 import { addNewObject } from '../actions/NavbarActions';
 
 class Navbar extends Component {
@@ -61,7 +61,7 @@ class Navbar extends Component {
             <Menu.Menu position='right'>
               <Menu.Item style={{ 'paddingRight' : 0 }}>
                 <Button basic
-                        disabled={this.state.addNew}
+                        disabled={this.props.navbar.addNew}
                         content='Add'
                         icon='plus'
                         color='teal'
@@ -83,8 +83,8 @@ function mapDispatchToProps( dispatch ) {
   }
 }
 
-function mapStateToProps( state ) {
-  return { navbar : state.navbar };
+function mapStateToProps( { navbar } ) {
+  return { navbar : navbar };
 }
 
 export default connect( mapStateToProps, mapDispatchToProps )( Navbar );

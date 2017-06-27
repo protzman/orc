@@ -1,8 +1,11 @@
 import axios from 'axios';
+import _ from 'lodash';
 
 export const POST_CP       = 'post_cloud_property';
+export const EDIT_CP       = 'edit_cloud_property';
 export const FETCH_CPS     = 'fetch_cloud_properties';
 export const FETCH_CP_KEYS = 'fetch_cloud_property_keys';
+export const DELETE_CP     = 'delete_cloud_property';
 
 const ROOT_URL = 'http://localhost:8080/orchestration/service/rest';
 
@@ -11,23 +14,44 @@ export function createCloudProperty( values ) {
     const VARIABLE_URL = '/cloud/property';
     return axios.post( `${ROOT_URL}${VARIABLE_URL}`, values )
       .then( ( response ) => {
-        console.log( 'Create Cloud Props Response', response );
-
-        console.log( 'Hello' );
-        console.log( 'States and shit: ', getState() );
         let newData = getState().cloudPropertyReducer.cloudPropertiesData;
-        console.log( 'Hello2' )
-        console.log( 'Old Data Array: ', newData );
         newData.push( response.data );
-        console.log( 'New Data Array: ', newData );
         dispatch( { type : POST_CP, payload : newData } );
+      } )
+      .catch( () => {
+        //dispatch error
+      } );
+  }
+}
+
+export function editCloudProperty( values ) {
+  return ( dispatch, getState ) => {
+    const VARIABLE_URL = '/cloud/property';
+    return axios.post( `${ROOT_URL}${VARIABLE_URL}`, values )
+      .then( ( response ) => {
+        let newData = getState().cloudPropertyReducer.cloudPropertiesData;
+        newData.push( response.data );
+        dispatch( { type : POST_CP, payload : newData } );
+      } )
+      .catch( () => {
+        //dispatch error
+      } );
+  }
+}
+
+export function deleteCloudProperty( value ) {
+  return ( dispatch, getState ) => {
+    const VARIABLE_URL = '/cloud/property';
+    return axios.delete( `${ROOT_URL}${VARIABLE_URL}/${value}` )
+      .then( ( response ) => {
+        let newData = _.reject( getState().cloudPropertyReducer.cloudPropertiesData, { 'propertyName' : value } );
+        dispatch( { type : DELETE_CP, payload : newData } );
       } )
       .catch( () => {
         //dispatch error
       } );
 
   }
-
 }
 
 export function fetchCloudProperties() {
