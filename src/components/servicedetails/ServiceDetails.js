@@ -8,12 +8,14 @@ import {
   Icon,
   Loader,
   Popup,
+  Segment,
   Table
 } from 'semantic-ui-react';
 import {
   createService,
   deleteService,
-  fetchServices
+  fetchServices,
+  setActiveService
 } from '../../actions/ServiceDetailsActions';
 
 class ServiceDetails extends Component {
@@ -23,26 +25,27 @@ class ServiceDetails extends Component {
   };
 
   handleClick( item ) {
-    this.setState( {
-      selectedService : item
-    } );
+    this.props.setActiveService( item );
+
   }
 
   renderServicesTable() {
     return (
-      <Table selectable
-             columns={4}>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Service Name</Table.HeaderCell>
-            <Table.HeaderCell></Table.HeaderCell>
-            <Table.HeaderCell></Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {this.renderServices()}
-        </Table.Body>
-      </Table>
+      <Segment>
+        <Table basic='very'
+               selectable
+               columns={4}>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Service Name</Table.HeaderCell>
+              <Table.HeaderCell></Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {this.renderServices()}
+          </Table.Body>
+        </Table>
+      </Segment>
     );
   }
 
@@ -56,20 +59,7 @@ class ServiceDetails extends Component {
         <Table.Row key={service.id}
                    onClick={() => this.handleClick( service.serviceName )}
                    className={this.state.selectedService === service.serviceName ? 'selected' : ''}>
-          <Table.Cell className='seven wide'>{service.serviceName}</Table.Cell>
-          <Table.Cell className='one wide'>
-            <Popup
-              inverted
-              trigger={
-                <Icon link
-                      name='pencil'/>
-              }
-              content='edit service'
-              position='top right'
-              offset={5}
-              size='mini'
-            />
-          </Table.Cell>
+          <Table.Cell className='fifteen wide'>{service.serviceName}</Table.Cell>
           <Table.Cell className='one wide'>
             <Popup
               inverted
@@ -219,9 +209,15 @@ class ServiceDetails extends Component {
 }
 
 function mapStateToProps( state ) {
-  return { services : state.serviceDetailsReducer };
+  console.log( state );
+  return {
+    services      : state.serviceDetailsReducer,
+    activeService : state.serviceDetailsReducer.service
+  };
 }
 export default connect( mapStateToProps, {
   fetchServices,
-  createService, deleteService
+  createService,
+  deleteService,
+  setActiveService
 } )( ServiceDetails );

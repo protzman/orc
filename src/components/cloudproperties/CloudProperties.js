@@ -7,6 +7,7 @@ import {
   Icon,
   Loader,
   Popup,
+  Segment,
   Table
 } from 'semantic-ui-react';
 import {
@@ -18,8 +19,8 @@ import {
 class CloudProperties extends Component {
 
   state = {
-    dim : true
-    //modalOpen : false
+    dim       : true,
+    modalOpen : false
   };
 
   renderProperties() {
@@ -73,15 +74,13 @@ class CloudProperties extends Component {
   }
 
   editCloudProperty( property ) {
-    console.log( property );
     this.props.setActiveCloudProperty( property );
     const location = this.props.location.pathname;
-    console.log( location );
     this.props.history.push( `${location}/${property.propertyName.toLowerCase()}/edit` );
   }
 
   deleteCloudProperty( property ) {
-    console.log( 'in delete' );
+    //console.log( 'in delete' );
     //this.setState( { modalOpen : true } );
     this.props.deleteCloudProperty( property.propertyName );
   }
@@ -93,45 +92,27 @@ class CloudProperties extends Component {
                 page>
           <Loader size='massive'>Loading</Loader>
         </Dimmer>
-        {/*
-         <Modal basic
-         open={this.state.modalOpen}
-         onClose={this.handleClose}
-         size='small'>
-         <Header icon='cloud'
-         content='Delete Cloud Property'/>
-         <Modal.Content>
-         <p>Are you sure you want to delete this cloud property?</p>
-         </Modal.Content>
-         <Modal.Actions>
-         <Button color='teal'
-         onClick={this.setState( { modalOpen : false } )}>
-         <Icon name='remove'/> No
-         </Button>
-         <Button color='red'>
-         <Icon name='checkmark'/> Yes
-         </Button>
-         </Modal.Actions>
-         </Modal>
-         */}
         <Container>
-          <Table columns={4}>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Cloud Property
-                  Name</Table.HeaderCell>
-                <Table.HeaderCell>Cloud Property
-                  Value</Table.HeaderCell>
-                <Table.HeaderCell>
-                </Table.HeaderCell>
-                <Table.HeaderCell>
-                </Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {this.renderProperties()}
-            </Table.Body>
-          </Table>
+          <Segment>
+            <Table basic='very'
+                   columns={4}>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell>Cloud Property
+                    Name</Table.HeaderCell>
+                  <Table.HeaderCell>Cloud Property
+                    Value</Table.HeaderCell>
+                  <Table.HeaderCell>
+                  </Table.HeaderCell>
+                  <Table.HeaderCell>
+                  </Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {this.renderProperties()}
+              </Table.Body>
+            </Table>
+          </Segment>
         </Container>
       </div>
     );

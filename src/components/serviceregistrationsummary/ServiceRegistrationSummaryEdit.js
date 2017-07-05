@@ -9,32 +9,25 @@ import {
   Message,
   Segment
 } from 'semantic-ui-react';
-import { editCloudProperty } from '../../actions/CloudPropertiesActions';
 import { addComplete } from '../../actions/NavbarActions';
+import { updateServiceRegistration } from '../../actions/ServiceRegistrationSummaryActions';
 
-class CloudPropertiesEdit extends Component {
+class ServiceRegistrationSummaryEdit extends Component {
   constructor( props ) {
     super( props );
 
     this.state = {
-      cloudPropKeys : null,
-      loading       : true
+      loading : true
     }
-
-  }
-
-  componentDidMount() {
-    this.props.initialize( this.props.initialValues );
   }
 
   renderInputField( field ) {
     const { meta : { touched, error } } = field;
-    const className                     = `${touched && error ? 'error' : ''}`;
+    const className                     = `form-group ${touched && error ? 'error' : ''}`;
     return (
       <div className={className}>
-        <Form.Field className='field'
-                    readOnly>
-          <label >{field.label}</label>
+        <Form.Field className='field'>
+          <label>{field.label}</label>
           <Form.Input {...field.input}
                       placeholder={field.label}
                       readOnly={field.isReadOnly}/>
@@ -50,19 +43,18 @@ class CloudPropertiesEdit extends Component {
   }
 
   onSubmit( values ) {
-    console.log( 'Values', values );
-    this.props.editCloudProperty( values );
-    /*
-     TODO: Review whether we want to disable or enable the add button while
-     a user is in edit mode
-     */
-    //this.props.addComplete();
-    this.props.history.push( '/cloudproperties' );
+    this.props.updateServiceRegistration( values );
+    this.props.addComplete();
+    this.props.history.push( '/serviceregistrationsummary' );
   }
 
   cancelButton() {
     this.props.addComplete();
     this.props.history.goBack();
+  }
+
+  componentDidMount() {
+    this.props.initialize( this.props.initialValues );
   }
 
   render() {
@@ -74,14 +66,17 @@ class CloudPropertiesEdit extends Component {
           <Segment>
             <Form className='field'
                   onSubmit={handleSubmit( ( values ) => this.onSubmit( values ) )}>
-              <h3>Edit Cloud Property</h3>
-              <Field name='propertyName'
-                     label='Property Name'
+              <h3>Register a Service</h3>
+              <Field name='serviceName'
+                     label='Service Name'
                      component={this.renderInputField}
-                     isReadOnly={true}
-              />
-              <Field name='propertyValue'
-                     label='Property Value'
+                     isReadOnly={true}/>
+              <Field name='uri'
+                     label='Service URI'
+                     component={this.renderInputField}
+                     isReadOnly={false}/>
+              <Field name='statusUri'
+                     label='Status URI'
                      component={this.renderInputField}
                      isReadOnly={false}/>
               <Button color='red'
@@ -99,33 +94,35 @@ class CloudPropertiesEdit extends Component {
 function validate( values ) {
   const errors = {};
 
-  if ( ! values.propertyName ) {
-    errors.propertyName = 'Enter a Property';
+  if ( ! values.serviceName ) {
+    errors.serviceName = 'Enter a Service Name';
   }
-  if ( ! values.propertyValue ) {
-    errors.propertyValue = 'Enter a Value'
+  if ( ! values.uri ) {
+    errors.uri = 'Enter a Service URI';
   }
-
+  if ( ! values.statusUri ) {
+    errors.statusUri = 'Enter a Status URI';
+  }
   return errors;
 }
 
 function mapStateToProps( state ) {
   return {
-    initialValues : state.cloudPropertyReducer.cloudPropertiesObject
-  };
+    initialValues : state.serviceRegistrationSummaryReducer.serviceRegistrationObject
+  }
 }
 
 function mapDispatchToProps( dispatch ) {
   return {
-    addComplete       : function () {
+    addComplete               : function () {
       dispatch( addComplete() )
     },
-    editCloudProperty : function ( values ) {
-      dispatch( editCloudProperty( values ) )
+    updateServiceRegistration : function ( values ) {
+      dispatch( updateServiceRegistration( values ) )
     }
   }
 }
 export default reduxForm( {
   validate,
-  form : 'NewCloudPropertyForm'
-} )( connect( mapStateToProps, mapDispatchToProps )( CloudPropertiesEdit ) );
+  form : 'NewServiceRegistrationForm'
+} )( connect( mapStateToProps, mapDispatchToProps )( ServiceRegistrationSummaryEdit ) );

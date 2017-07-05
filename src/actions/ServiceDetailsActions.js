@@ -1,10 +1,12 @@
 import axios from 'axios';
+import _ from 'lodash';
 
 const ROOT_URL = 'http://localhost:8080/orchestration/service/rest';
 
 export const FETCH_S  = 'fetch_services';
 export const POST_S   = 'post_service';
 export const DELETE_S = 'delete_service';
+export const SET_S    = 'set_active_service';
 
 export const FETCH_SC  = 'fetch_service_configuration';
 export const POST_SC   = 'post_service_configuration';
@@ -32,7 +34,7 @@ export function createService( values ) {
     const VARIABLE_URL = '/service';
     return axios.post( `${ROOT_URL}${VARIABLE_URL}`, values )
       .then( ( response ) => {
-        let newData = getState().serviceDetailsReducer.serviceDetailsData;
+        let newData = getState().serviceDetailsReducer.serviceDetailsData.services;
         newData.push( response.data );
         dispatch( { type : POST_S, payload : newData } );
       } )
@@ -44,14 +46,24 @@ export function createService( values ) {
 
 export function deleteService( service ) {
   return ( dispatch, getState ) => {
-    const VARIABLE_URL = `/service/${service}`;
+    const VARIABLE_URL = `/${service}`;
     return axios.delete( `${ROOT_URL}${VARIABLE_URL}` )
       .then( ( response ) => {
-        dispatch( { type : DELETE_S, payload : response.data } );
+        console.log( 'service: ', service );
+        let newData = _.reject( getState().serviceDetailsReducer.serviceDetailsData.services, { 'serviceName' : service } );
+        console.log( newData );
+        dispatch( { type : DELETE_S, payload : newData } );
       } )
       .catch( ( errors ) => {
         // dispatch error
       } );
+  }
+}
+
+export function setActiveService( service ) {
+  return {
+    type    : SET_S,
+    service : service
   }
 }
 

@@ -7,11 +7,13 @@ import {
   Icon,
   Loader,
   Popup,
+  Segment,
   Table
 } from 'semantic-ui-react';
 import {
   deleteServiceRegistration,
-  fetchServiceRegistrations
+  fetchServiceRegistrations,
+  setActiveServiceRegistration
 } from '../../actions/ServiceRegistrationSummaryActions';
 
 class ServiceRegistrationSummary extends Component {
@@ -22,7 +24,6 @@ class ServiceRegistrationSummary extends Component {
 
   renderServiceRegistrations() {
     return _.map( this.props.registrations.serviceRegistrationSummaryData, registration => {
-      console.log( registration );
       return (
         <Table.Row key={registration.serviceName}>
           <Table.Cell className='five wide'>{registration.serviceName}</Table.Cell>
@@ -61,7 +62,9 @@ class ServiceRegistrationSummary extends Component {
   }
 
   editServiceRegistration( values ) {
-
+    this.props.setActiveServiceRegistration( values );
+    const location = this.props.location.pathname;
+    this.props.history.push( `${location}/${values.serviceName.toLowerCase()}/edit` );
   }
 
   deleteServiceRegistration( values ) {
@@ -87,21 +90,24 @@ class ServiceRegistrationSummary extends Component {
           <Loader size='massive'>Loading</Loader>
         </Dimmer>
         <Container>
-          <Table columns={4}>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Service Name</Table.HeaderCell>
-                <Table.HeaderCell>URI</Table.HeaderCell>
-                <Table.HeaderCell>
-                </Table.HeaderCell>
-                <Table.HeaderCell>
-                </Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {this.renderServiceRegistrations()}
-            </Table.Body>
-          </Table>
+          <Segment>
+            <Table basic='very'
+                   columns={4}>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell>Service Name</Table.HeaderCell>
+                  <Table.HeaderCell>URI</Table.HeaderCell>
+                  <Table.HeaderCell>
+                  </Table.HeaderCell>
+                  <Table.HeaderCell>
+                  </Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {this.renderServiceRegistrations()}
+              </Table.Body>
+            </Table>
+          </Segment>
         </Container>
       </div>
     );
@@ -113,5 +119,5 @@ function mapStateToProps( state ) {
 }
 export default connect( mapStateToProps, {
   fetchServiceRegistrations,
-  deleteServiceRegistration
+  deleteServiceRegistration, setActiveServiceRegistration
 } )( ServiceRegistrationSummary );

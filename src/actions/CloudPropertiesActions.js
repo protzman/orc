@@ -2,7 +2,7 @@ import axios from 'axios';
 import _ from 'lodash';
 
 export const POST_CP       = 'post_cloud_property';
-export const SET_CP       = 'set_cloud_property';
+export const SET_CP        = 'set_active_cloud_property';
 export const FETCH_CPS     = 'fetch_cloud_properties';
 export const FETCH_CP_KEYS = 'fetch_cloud_property_keys';
 export const DELETE_CP     = 'delete_cloud_property';
@@ -25,6 +25,8 @@ export function createCloudProperty( values ) {
 }
 
 export function editCloudProperty( values ) {
+  console.log( 'in edit cp' );
+  console.log( values );
   return ( dispatch, getState ) => {
     const VARIABLE_URL = '/cloud/property';
     return axios.post( `${ROOT_URL}${VARIABLE_URL}`, values )
@@ -83,6 +85,6 @@ export function fetchCloudPropertyKeys() {
   }
 }
 
-export function setActiveCloudProperty(cloudObject) {
-  return {type: SET_CP, cloudObject : cloudObject}
+export function setActiveCloudProperty( cloudObject ) {
+  return { type : SET_CP, cloudObject : cloudObject }
 }

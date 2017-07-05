@@ -7,7 +7,8 @@ import {
   FETCH_SP,
   POST_S,
   POST_SC,
-  POST_SP
+  POST_SP,
+  SET_S
 } from '../actions/ServiceDetailsActions';
 
 export default function ( state = {
@@ -19,7 +20,7 @@ export default function ( state = {
 }, action ) {
   switch ( action.type ) {
     case DELETE_S:
-      return { ...state, serviceDetailsData : action.payload };
+      return { ...state, serviceDetailsData : { services : action.payload } };
     case DELETE_SC:
       return { ...state, serviceDetailsData : action.payload };
     case DELETE_SP:
@@ -34,11 +35,13 @@ export default function ( state = {
     case FETCH_SP:
       return { ...state, serviceDetailsData : { properties : action.payload } };
     case POST_S:
-      return { ...state, serviceDetailsData : action.payload };
+      return { ...state, serviceDetailsData : { services : action.payload } };
     case POST_SC:
       return { ...state, serviceDetailsData : action.payload };
     case POST_SP:
       return { ...state, serviceDetailsData : action.payload };
+    case SET_S:
+      return { ...state, activeService : action.service };
     default:
       return state;
   }

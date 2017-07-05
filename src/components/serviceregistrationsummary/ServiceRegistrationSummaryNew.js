@@ -28,7 +28,7 @@ class ServiceRegistrationSummaryNew extends Component {
       <div className={className}>
         <Form.Field className='field'>
           <label>{field.label}</label>
-          <input {...field.input}
+          <Form.Input {...field.input}
                  placeholder={field.label}/>
           { touched && error &&
           <Message className="text-help"

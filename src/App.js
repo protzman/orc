@@ -9,6 +9,7 @@ import ServiceDetails from './components/servicedetails/ServiceDetails';
 import ServiceDetailsNew from './components/servicedetails/ServiceDetailsNew';
 import ServiceRegistrationSummary from './components/serviceregistrationsummary/ServiceRegistrationSummary';
 import ServiceRegistrationSummaryNew from './components/serviceregistrationsummary/ServiceRegistrationSummaryNew';
+import ServiceRegistrationSummaryEdit from './components/serviceregistrationsummary/ServiceRegistrationSummaryEdit';
 
 class App extends Component {
   render() {
@@ -31,12 +32,15 @@ class App extends Component {
         <Route path="/servicedetails"
                exact
                component={ServiceDetails}/>
-        <Route path="/serviceregistrationsummary"
-               exact
-               component={ServiceRegistrationSummary}/>
         <Route path="/serviceregistrationsummary/new"
                exact
                component={ServiceRegistrationSummaryNew}/>
+        <Route path="/serviceregistrationsummary/:id/edit"
+               exact
+               component={ServiceRegistrationSummaryEdit}/>
+        <Route path="/serviceregistrationsummary"
+               exact
+               component={ServiceRegistrationSummary}/>
       </div>
     );
   }

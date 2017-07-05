@@ -5,7 +5,9 @@ const ROOT_URL = 'http://localhost:8080/orchestration/service/rest';
 
 export const FETCH_SR  = 'fetch_service_registrations';
 export const POST_SR   = 'post_service_registration';
+export const UPDATE_SR = 'update_service_registration';
 export const DELETE_SR = 'delete_service_registration';
+export const SET_SR    = 'set_active_service_registration';
 
 export function fetchServiceRegistrations() {
   return ( dispatch, getState ) => {
@@ -36,6 +38,23 @@ export function createServiceRegistration( values ) {
       } );
   }
 }
+export function updateServiceRegistration( values ) {
+  return ( dispatch, getState ) => {
+    const VARIABLE_URL = '/registration';
+    return axios.post( `${ROOT_URL}${VARIABLE_URL}`, values )
+      .then( ( response ) => {
+        //TODO skim off old entry, add new entry
+        let newData = getState()
+          .serviceRegistrationSummaryReducer
+          .serviceRegistrationSummaryData;
+        newData.push( response.data );
+        dispatch( { type : UPDATE_SR, payload : newData } );
+      } )
+      .catch( () => {
+        // dispatch error
+      } );
+  }
+}
 
 export function deleteServiceRegistration( service ) {
   return ( dispatch, getState ) => {
@@ -52,5 +71,12 @@ export function deleteServiceRegistration( service ) {
       .catch( () => {
         // dispatch error
       } )
+  }
+}
+
+export function setActiveServiceRegistration( serviceRegistrationObject ) {
+  return {
+    type                      : SET_SR,
+    serviceRegistrationObject : serviceRegistrationObject
   }
 }
