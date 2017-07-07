@@ -80,7 +80,6 @@ class CloudProperties extends Component {
   }
 
   deleteCloudProperty( property ) {
-    //console.log( 'in delete' );
     //this.setState( { modalOpen : true } );
     this.props.deleteCloudProperty( property.propertyName );
   }

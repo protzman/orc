@@ -25,8 +25,6 @@ export function createCloudProperty( values ) {
 }
 
 export function editCloudProperty( values ) {
-  console.log( 'in edit cp' );
-  console.log( values );
   return ( dispatch, getState ) => {
     const VARIABLE_URL = '/cloud/property';
     return axios.post( `${ROOT_URL}${VARIABLE_URL}`, values )
@@ -58,7 +56,6 @@ export function deleteCloudProperty( value ) {
 
 export function fetchCloudProperties() {
   return ( dispatch, getState ) => {
-
     const VARIABLE_URL = '/cloud/properties';
     return axios.get( `${ROOT_URL}${VARIABLE_URL}` )
       .then( ( response ) => {
@@ -67,21 +64,6 @@ export function fetchCloudProperties() {
       .catch( ( errors ) => {
         //dispatch or handle error message
       } );
-  }
-}
-
-export function fetchCloudPropertyKeys() {
-  return ( dispatch, getState ) => {
-
-    const VARIABLE_URL = '/cloud/properties/keys';
-    return axios.get( `${ROOT_URL}${VARIABLE_URL}` )
-      .then( ( response ) => {
-        dispatch( { type : FETCH_CP_KEYS, payload : response } );
-      } )
-      .catch( ( errors ) => {
-        //dispatch or handle error message
-      } );
-
   }
 }
 

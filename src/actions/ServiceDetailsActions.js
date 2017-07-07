@@ -11,6 +11,7 @@ export const SET_S    = 'set_active_service';
 export const FETCH_SC  = 'fetch_service_configuration';
 export const POST_SC   = 'post_service_configuration';
 export const DELETE_SC = 'delete_service_configuration';
+export const UPDATE_SC = 'update_service_configuration';
 
 export const FETCH_SP  = 'fetch_service_properties';
 export const POST_SP   = 'fetch_service_property';
@@ -60,10 +61,12 @@ export function deleteService( service ) {
   }
 }
 
-export function setActiveService( service ) {
+export function setActiveService( serviceConfigObject ) {
+  console.log( 'service config obj in ACTIONS' );
+  console.log( serviceConfigObject );
   return {
-    type    : SET_S,
-    service : service
+    type                : SET_S,
+    serviceConfigObject : serviceConfigObject
   }
 }
 
@@ -72,13 +75,14 @@ export function fetchServiceConfiguration( service ) {
     const VARIABLE_URL = `/${service}/configuration`;
     return axios.get( `${ROOT_URL}${VARIABLE_URL}` )
       .then( ( response ) => {
-        dispatch( { type : FETCH_S, payload : response.data } );
+        dispatch( { type : FETCH_SC, payload : response.data } );
       } )
       .catch( ( errors ) => {
         // dispatch error
       } );
   }
 }
+
 export function createServiceConfiguration( values ) {
   return ( dispatch, getState ) => {
     const VARIABLE_URL = '/configuration';
@@ -107,12 +111,27 @@ export function deleteServiceConfiguration( service ) {
   }
 }
 
+export function upadateServiceConfiguration( values ) {
+  return ( dispatch, getState ) => {
+    const VARIABLE_URL = '/configuration';
+    return axios.post( `${ROOT_URL}${VARIABLE_URL}`, values )
+      .then( ( response ) => {
+        let newData = getState().serviceDetailsReducer.serviceDetailsData;
+        newData.push( response.data );
+        dispatch( { type : UPDATE_SC, payload : newData } );
+      } )
+      .catch( () => {
+        // dispatch error
+      } );
+  }
+}
+
 export function fetchServiceProperties( service ) {
   return ( dispatch, getState ) => {
     const VARIABLE_URL = `/${service}/properties`;
     return axios.get( `${ROOT_URL}${VARIABLE_URL}` )
       .then( ( response ) => {
-        dispatch( { type : FETCH_S, payload : response.data } );
+        dispatch( { type : FETCH_SP, payload : response.data } );
       } )
       .catch( ( errors ) => {
         // dispatch error

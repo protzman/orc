@@ -15,7 +15,7 @@ import {
   createServiceConfiguration
 } from '../../actions/ServiceDetailsActions';
 
-class ServiceDetailsNew extends Component {
+class ServiceConfigEdit extends Component {
   constructor( props ) {
     super( props );
 
@@ -32,7 +32,8 @@ class ServiceDetailsNew extends Component {
         <Form.Field className='field'>
           <label>{field.label}</label>
           <Form.Input {...field.input}
-                      placeholder={field.label}/>
+                      placeholder={field.label}
+                      readOnly={field.isReadOnly}/>
           { touched && error &&
           <Message className="text-help"
                    size="tiny"
@@ -60,6 +61,12 @@ class ServiceDetailsNew extends Component {
     this.props.history.goBack();
   }
 
+  componentDidMount() {
+    console.log( 'props' );
+    console.log( this.props );
+    this.props.initialize( this.props.initialValues );
+  }
+
   render() {
     const { handleSubmit } = this.props;
 
@@ -72,13 +79,16 @@ class ServiceDetailsNew extends Component {
               <h3>Create New Service</h3>
               <Field name='serviceName'
                      label='Service Name'
-                     component={this.renderInputField}/>
+                     component={this.renderInputField}
+                     isReadOnly={true}/>
               <Field name='storageBucket'
                      label='Storage Bucket'
-                     component={this.renderInputField}/>
+                     component={this.renderInputField}
+                     isReadOnly={false}/>
               <Field name='srcFileKey'
                      label='Source File Key'
-                     component={this.renderInputField}/>
+                     component={this.renderInputField}
+                     isReadOnly={false}/>
               <Button color='red'
                       onClick={() => this.cancelButton()}
                       inverted>Cancel</Button>
@@ -107,7 +117,11 @@ function validate( values ) {
 }
 
 function mapStateToProps( state ) {
-  return { cloudPropertyKeys : state.cloudPropertyReducer };
+  console.log( '!!state' )
+  console.log( state )
+  return {
+    initialValues : state.serviceDetailsReducer.serviceConfigObject
+  };
 }
 
 function mapDispatchToProps( dispatch ) {
@@ -126,4 +140,4 @@ function mapDispatchToProps( dispatch ) {
 export default reduxForm( {
   validate,
   form : 'NewServiceForm'
-} )( connect( mapStateToProps, mapDispatchToProps )( ServiceDetailsNew ) );
+} )( connect( mapStateToProps, mapDispatchToProps )( ServiceConfigEdit ) );

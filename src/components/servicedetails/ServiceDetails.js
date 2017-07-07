@@ -2,9 +2,10 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
+  Button,
   Container,
   Dimmer,
-  Grid,
+  Dropdown,
   Icon,
   Loader,
   Popup,
@@ -14,6 +15,8 @@ import {
 import {
   createService,
   deleteService,
+  fetchServiceConfiguration,
+  fetchServiceProperties,
   fetchServices,
   setActiveService
 } from '../../actions/ServiceDetailsActions';
@@ -24,105 +27,124 @@ class ServiceDetails extends Component {
     selectedService : ''
   };
 
-  handleClick( item ) {
-    this.props.setActiveService( item );
-
-  }
-
   renderServicesTable() {
     return (
-      <Segment>
-        <Table basic='very'
-               selectable
-               columns={4}>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Service Name</Table.HeaderCell>
-              <Table.HeaderCell></Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {this.renderServices()}
-          </Table.Body>
-        </Table>
-      </Segment>
-    );
-  }
-
-  deleteService( service ) {
-    this.props.deleteService( service.serviceName );
-  }
-
-  renderServices() {
-    return _.map( this.props.services.serviceDetailsData.services, service => {
-      return (
-        <Table.Row key={service.id}
-                   onClick={() => this.handleClick( service.serviceName )}
-                   className={this.state.selectedService === service.serviceName ? 'selected' : ''}>
-          <Table.Cell className='fifteen wide'>{service.serviceName}</Table.Cell>
-          <Table.Cell className='one wide'>
-            <Popup
-              inverted
-              trigger={
-                <Icon link
-                      name='trash'
-                      onClick={() => this.deleteService( service )}/>
-              }
-              content='delete service'
-              position='top right'
-              offset={5}
-              size='mini'
-            />
-          </Table.Cell>
-        </Table.Row>
-      );
-    } );
-  }
-
-  renderServiceConfigurationTable() {
-    return (
-      <Table columns={4}>
+      <Table basic='very'
+             columns={4}>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell className='seven wide'>Service
-              Configuration</Table.HeaderCell>
-            <Table.HeaderCell className='nine wide'></Table.HeaderCell>
-            <Table.HeaderCell className='one wide'><Icon name='pencil'/>
-            </Table.HeaderCell>
-            <Table.HeaderCell className='one wide'><Icon name='trash'/></Table.HeaderCell>
+            <Table.HeaderCell>Service Name</Table.HeaderCell>
+            <Table.HeaderCell>Storage Bucket</Table.HeaderCell>
+            <Table.HeaderCell>Source File Key</Table.HeaderCell>
+            <Table.HeaderCell></Table.HeaderCell>
+            <Table.HeaderCell></Table.HeaderCell>
           </Table.Row>
         </Table.Header>
-
         <Table.Body>
-          <Table.Row>
-            <Table.Cell><b>Service Name</b></Table.Cell>
-            <Table.Cell>None</Table.Cell>
-            <Table.Cell></Table.Cell>
-            <Table.Cell></Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell><b>Storage Bucket</b></Table.Cell>
-            <Table.Cell>None</Table.Cell>
-            <Table.Cell></Table.Cell>
-            <Table.Cell></Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell><b>Source File Key</b></Table.Cell>
-            <Table.Cell>deploy/web/wars/notification.war</Table.Cell>
-            <Table.Cell></Table.Cell>
-            <Table.Cell></Table.Cell>
-          </Table.Row>
+          {this.renderServices()}
         </Table.Body>
       </Table>
     );
   }
 
+  deleteService() {
+    //TODO need to use something other than the servicename coming from
+    // config for bad entries it wont have the .configuration data
+    this.props.deleteService( this.props.serviceData.configuration.serviceName );
+  }
+
+  fetchServiceDetails( value ) {
+    this.props.fetchServiceConfiguration( value );
+    this.props.fetchServiceProperties( value );
+  }
+
+  createServiceProperty() {
+    console.log('in service prop');
+    let config = this.props.serviceData.configuration;
+    this.props.setActiveService( config );
+    const location = this.props.location.pathname;
+    this.props.history.push( `${location}/${config.serviceName.toLowerCase()}/property/new` );
+  }
+
+  editServiceConfiguration() {
+    let config = this.props.serviceData.configuration;
+    this.props.setActiveService( config );
+    const location = this.props.location.pathname;
+    this.props.history.push( `${location}/${config.serviceName.toLowerCase()}/config/edit` );
+  }
+
+  renderServices() {
+    let modifiedServices = _.toArray(
+      _.map( this.props.serviceData.services,
+        function ( key, value ) {
+          return {
+            'key'   : value,
+            'text'  : key.serviceName,
+            'value' : key.serviceName
+          };
+        } ) );
+
+    let bucket  = '';
+    let srcFile = '';
+    if ( this.props.serviceData.configuration ) {
+      bucket  = this.props.serviceData.configuration.storageBucket;
+      srcFile = this.props.serviceData.configuration.srcFileKey;
+    }
+    else {
+      bucket  = '...';
+      srcFile = '...';
+    }
+
+    return (
+      <Table.Row>
+        <Table.Cell className='four wide'>
+          <Dropdown className='selection'
+                    placeholder='Select Service'
+                    search
+                    fluid
+                    options={modifiedServices}
+                    onChange={( e, { value } ) => this.fetchServiceDetails( value )}/>
+        </Table.Cell>
+        <Table.Cell className='four wide'>{bucket}</Table.Cell>
+        <Table.Cell className='six wide'>{srcFile}</Table.Cell>
+        <Table.Cell className='one wide'>
+          <Popup
+            inverted
+            trigger={
+              <Icon link
+                    name='pencil'
+                    onClick={() => this.editServiceConfiguration()}/>
+            }
+            content='edit service config'
+            position='top right'
+            offset={5}
+            size='mini'
+          />
+        </Table.Cell>
+        <Table.Cell className='one wide'>
+          <Popup
+            inverted
+            trigger={
+              <Icon link
+                    name='trash'
+                    onClick={() => this.deleteService()}/>
+            }
+            content='delete service'
+            position='top right'
+            offset={5}
+            size='mini'
+          />
+        </Table.Cell>
+      </Table.Row>
+    );
+  }
+
   renderServiceProperties() {
-    return _.map( this.props.services.serviceDetailsData, service => {
+    return _.map( this.props.serviceData.properties, service => {
       return (
         <Table.Row key={service.id}>
-          <Table.Cell className='seven wide'>{service.serviceName}</Table.Cell>
-          <Table.Cell className='seven wide'>{service.serviceName}</Table.Cell>
+          <Table.Cell className='seven wide'>{service.propertyName}</Table.Cell>
+          <Table.Cell className='seven wide'>{service.propertyValue}</Table.Cell>
           <Table.Cell className='one wide'>
             <Popup
               inverted
@@ -156,19 +178,23 @@ class ServiceDetails extends Component {
 
   renderServicePropertiesTable() {
     return (
-      <Table columns={4}>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Property Name</Table.HeaderCell>
-            <Table.HeaderCell>Property Value</Table.HeaderCell>
-            <Table.HeaderCell></Table.HeaderCell>
-            <Table.HeaderCell></Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {this.renderServiceProperties()}
-        </Table.Body>
-      </Table>
+      <Segment>
+        <Table basic='very'
+               columns={4}>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Property Name</Table.HeaderCell>
+              <Table.HeaderCell>Property Value</Table.HeaderCell>
+              <Table.HeaderCell></Table.HeaderCell>
+              <Table.HeaderCell></Table.HeaderCell>
+              <Table.HeaderCell></Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {this.renderServiceProperties()}
+          </Table.Body>
+        </Table>
+      </Segment>
     );
   }
 
@@ -191,17 +217,16 @@ class ServiceDetails extends Component {
           <Loader size='massive'>Loading</Loader>
         </Dimmer>
         <Container>
-          <Grid columns={2}>
-            <Grid.Row stretched>
-              <Grid.Column width={4}>
-                {this.renderServicesTable()}
-              </Grid.Column>
-              <Grid.Column width={12}>
-                {this.renderServiceConfigurationTable()}
-                {this.renderServicePropertiesTable()}
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
+          <Segment>
+            {this.renderServicesTable()}
+          </Segment>
+          {! _.isEmpty( this.props.serviceData.properties ) ? this.renderServicePropertiesTable() : ''}
+          <Button basic
+                  color='teal'
+                  content='Property'
+                  icon='plus'
+                  floated='right'
+                  onClick={() => this.createServiceProperty()}></Button>
         </Container>
       </div>
     );
@@ -209,9 +234,8 @@ class ServiceDetails extends Component {
 }
 
 function mapStateToProps( state ) {
-  console.log( state );
   return {
-    services      : state.serviceDetailsReducer,
+    serviceData   : state.serviceDetailsReducer.serviceDetailsData,
     activeService : state.serviceDetailsReducer.service
   };
 }
@@ -219,5 +243,7 @@ export default connect( mapStateToProps, {
   fetchServices,
   createService,
   deleteService,
+  fetchServiceConfiguration,
+  fetchServiceProperties,
   setActiveService
 } )( ServiceDetails );
